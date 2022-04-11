@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Text;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 using Nethereum.ABI.Model;
 using Nethereum.Contracts;
@@ -9,14 +10,17 @@ using Nethereum.Contracts.Extensions;
 using Nethereum.JsonRpc.UnityClient;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 using System.IO;
 
 using Unity.EditorCoroutines.Editor;
 
 public class ThetaNftDeployer : EditorWindow
 {
-    /* string objectBaseName = "";
-    int objectID = 1; */
+    string privateKey;
+    string account;
+
+    int objectID = 1;
     string tokenName;
     string tokenSymbol;
     GameObject objectToDeploy;
@@ -38,6 +42,13 @@ public class ThetaNftDeployer : EditorWindow
         /* GUILayout.Label("Theta NFT Deployer", EditorStyles.boldLabel); */
         /*  objectBaseName = EditorGUILayout.TextField("Base Name", objectBaseName);
         objectID = EditorGUILayout.IntField("Object ID", objectID); */
+
+    	
+        GUILayout.Label("Wallet Settings", EditorStyles.boldLabel);
+        privateKey = EditorGUILayout.TextField("Private Key", privateKey);
+        account = EditorGUILayout.TextField("Account Address", account);
+
+        GUILayout.Label("NFT Settings", EditorStyles.boldLabel);
         tokenName = EditorGUILayout.TextField("NFT Name", tokenName);
         tokenSymbol = EditorGUILayout.TextField("NFT Symbol", tokenSymbol);
         objectToDeploy = EditorGUILayout.ObjectField("Prefab to deploy", objectToDeploy, typeof(GameObject), false) as GameObject;
@@ -46,8 +57,51 @@ public class ThetaNftDeployer : EditorWindow
             Debug.Log("Deploy as NFT");
             this.StartCoroutine(DeployObject());
         }
+        if (GUILayout.Button("Deploy Image on EdgeNode")){ 
+            Debug.Log("Deploy image on EdgeNode");
+        	   this.StartCoroutine(DeployImage());
+        }
+        if (GUILayout.Button("Retrieve Image from EdgeNode")){ 
+            Debug.Log("RetrieveImage image on EdgeNode");
+        	   this.StartCoroutine(DeployImage());
+        }
+
+
         
     }
+
+    IEnumerator DeployImage()
+    {
+        var request = new UnityWebRequest("http://localhost:19888/rpc", "POST");
+	string bodyJsonString = "{\"jsonrpc\":\"2.0\",\"method\":\"edgestore.PutFile\",\"params\":[{\"path\": \"/Users/conve/Project/6068d56a-ad49-4f83-be9b-b0b32f42f9b9.png\"}],\"id\":2}";
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(bodyJsonString);
+        request.uploadHandler = (UploadHandler) new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        yield return request.SendWebRequest();
+        Debug.Log("Status Code: " + request.responseCode);
+
+         var data = request.downloadHandler.text;
+        Debug.Log("data: " + data);
+    }
+
+
+
+
+  IEnumerator RetrieveImage()
+    {
+        var request = new UnityWebRequest("http://localhost:19888/rpc", "POST");
+	string bodyJsonString = "{\"jsonrpc\":\"2.0\",\"method\":\"edgestore.GetFile\",\"params\":[{\"key\": \"0xdacc9a23035a458f21aa0cb51189d715cb5c43d7ff4c0227cca5c25eeef3d5b4\"}],\"id\":1}";
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(bodyJsonString);
+        request.uploadHandler = (UploadHandler) new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        yield return request.SendWebRequest();
+        Debug.Log("Status Code: " + request.responseCode);
+    }
+
+
+
 
     private IEnumerator DeployObject()
     {
@@ -58,10 +112,10 @@ public class ThetaNftDeployer : EditorWindow
             return;
         } */
         var url = "https://eth-rpc-api-testnet.thetatoken.org/rpc";
-        var privateKey = "5c5fe39a97019300e92794f387e14f6b6f0302857803ddc349e28111c0693dec";
-        var account = "0xb82F1f95C89cb666f53e6461171311d6aF9F63Ae";
+        /*var privateKey = "5c5fe39a97019300e92794f387e14f6b6f0302857803ddc349e28111c0693dec";
+        var account = "0xb82F1f95C89cb666f53e6461171311d6aF9F63Ae";*/
         //initialising the transaction request sender
-        var transactionRequest = new TransactionSignedUnityRequest(url, privateKey, 444444444500);
+        var transactionRequest = new TransactionSignedUnityRequest(url, privateKey, 365);
         transactionRequest.UseLegacyAsDefault = true;
 
 
