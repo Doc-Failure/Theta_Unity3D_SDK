@@ -20,6 +20,9 @@ public class ThetaNftDeployer : EditorWindow
     string privateKey;
     string account;
 
+
+    Texture2D texture;
+
     int objectID = 1;
     string tokenName;
     string tokenSymbol;
@@ -30,6 +33,14 @@ public class ThetaNftDeployer : EditorWindow
         GetWindow(typeof(ThetaNftDeployer), true, "Theta NFT Deployer");      //GetWindow is a method inherited from the EditorWindow class
     }
 
+ /*   [MenuItem("Theta Tools/NFT Deployer")]
+    static void Init()
+    {
+        var window = GetWindow<ThetaNftDeployer>("Texture Previewer");
+        //window.position = new Rect(0, 0, 1000, 1000);
+        window.Show();
+    }*/
+
     public class SmartContract
     {
         public string bytecodeSource;
@@ -37,13 +48,8 @@ public class ThetaNftDeployer : EditorWindow
         public string sourceMap;
     }
 
-    private void OnGUI()
-    {
-        /* GUILayout.Label("Theta NFT Deployer", EditorStyles.boldLabel); */
-        /*  objectBaseName = EditorGUILayout.TextField("Base Name", objectBaseName);
-        objectID = EditorGUILayout.IntField("Object ID", objectID); */
-
-    	
+    void OnGUI()
+    {	
         GUILayout.Label("Wallet Settings", EditorStyles.boldLabel);
         privateKey = EditorGUILayout.TextField("Private Key", privateKey);
         account = EditorGUILayout.TextField("Account Address", account);
@@ -66,9 +72,14 @@ public class ThetaNftDeployer : EditorWindow
         	   this.StartCoroutine(DeployImage());
         }
 
+	texture= new Texture2D(100,100);
+         var rawData = System.IO.File.ReadAllBytes("Assets/aaa.png");
+	texture.LoadImage(rawData);
+        	GUILayout.Label("NFT preview", EditorStyles.boldLabel);
+        EditorGUI.DrawPreviewTexture(new Rect(150, 220, 100, 100), texture);
 
-        
     }
+
 
     IEnumerator DeployImage()
     {
@@ -81,7 +92,7 @@ public class ThetaNftDeployer : EditorWindow
         yield return request.SendWebRequest();
         Debug.Log("Status Code: " + request.responseCode);
 
-         var data = request.downloadHandler.text;
+        var data = request.downloadHandler.text;
         Debug.Log("data: " + data);
     }
 
@@ -122,8 +133,8 @@ public class ThetaNftDeployer : EditorWindow
         var deployContract = new NFTDeployment()
         {
             TokenUri = "TST",
-            TokenName = "TST",
-            TokenSymbol = "TST"
+            TokenName = tokenName,
+            TokenSymbol = tokenSymbol
         };
 
         //deploy the contract and True indicates we want to estimate the gas
