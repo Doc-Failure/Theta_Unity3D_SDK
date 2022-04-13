@@ -23,11 +23,13 @@ public class ThetaNftDeployer : EditorWindow
 
     NFTDeployment deployContract;
 
+    GameObject redeemObjTrigger;
     Texture2D texture;
     bool showMeTheNFT=false;
     int objectID = 1;
     string tokenName;
     string tokenSymbol;
+    bool includeWalletLoginWidgetInGame=true;
     Texture2D objectToDeploy;
     byte[] rawData;
     [MenuItem("Theta Tools/NFT Deployer")]
@@ -59,6 +61,11 @@ public class ThetaNftDeployer : EditorWindow
         privateKey = EditorGUILayout.TextField("Private Key", privateKey);
         account = EditorGUILayout.TextField("Account Address", account);
 
+        GUILayout.Label("");
+	
+        GUILayout.Label("In Game Features", EditorStyles.boldLabel);
+        includeWalletLoginWidgetInGame = EditorGUILayout.Toggle("Wallet Login Widget", includeWalletLoginWidgetInGame);
+
      GUILayout.BeginVertical();
         GUILayout.Label("");
         GUILayout.Label("NFT Settings", EditorStyles.boldLabel);
@@ -84,10 +91,14 @@ public class ThetaNftDeployer : EditorWindow
         		GUILayout.Label("NFT preview", EditorStyles.boldLabel);
         		GUILayout.Label(texture);
 	}
+        if (deployContract!=null){
+        		redeemObjTrigger = EditorGUILayout.ObjectField("Redeem function trigger", redeemObjTrigger, typeof(GameObject), true, GUILayout.Height(EditorGUIUtility.singleLineHeight)) as GameObject;
+	}
         if (deployContract!=null && GUILayout.Button("Bind 'NFT Redeem' action to a game object")){ 
             Debug.Log("RetrieveImage image on EdgeNode");
         	   this.StartCoroutine(RetrieveImage());
         }
+	
 	
 
     }
