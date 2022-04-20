@@ -93,15 +93,18 @@ public class ThetaNftDeployer : EditorWindow
 	}
         if (deployContract!=null){
         		redeemObjTrigger = EditorGUILayout.ObjectField("Redeem function trigger", redeemObjTrigger, typeof(GameObject), true, GUILayout.Height(EditorGUIUtility.singleLineHeight)) as GameObject;
+        		if (GUILayout.Button("Bind 'NFT Redeem' action to a game object")){ 
+        	 		 NFTReedemer();
+        		}
+	
 	}
-        if (deployContract!=null && GUILayout.Button("Bind 'NFT Redeem' action to a game object")){ 
-            Debug.Log("RetrieveImage image on EdgeNode");
-        	   this.StartCoroutine(RetrieveImage());
-        }
-	
-	
 
     }
+
+	private void NFTReedemer(){
+            Debug.Log("NFT reedemer");
+	}
+
 
 
 
